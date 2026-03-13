@@ -3,45 +3,46 @@ import { EventCard } from './EventCard';
 
 export const EventCatalog = () => {
     const [eventos, setEventos] = useState([]);
+    const [cargando, setCargando] = useState(true);
 
     useEffect(() => {
-        // Función para traer los eventos reales del backend de NestJS
-        const fetchEvents = async () => {
-            try {
-                const response = await fetch('http://localhost:3000/eventos');
-                const data = await response.json();
+        // GET a la API de tus compañeros
+        fetch('http://localhost:3000/eventos')
+            .then(res => res.json())
+            .then(data => {
                 setEventos(data);
-            } catch (error) {
-                console.error("Error al obtener eventos del servidor:", error);
-            }
-        };
+                setCargando(false);
+            })
+            .catch(err => {
+                console.error("Error cargando eventos:", err);
+                setCargando(false);
+            });
+    }, []);
 
-        fetchEvents();
-    }, []); // El array vacío asegura que solo se ejecute una vez al cargar
+    if (cargando) return <div className="p-10 text-center font-bold text-slate-400 animate-pulse">Cargando iMeet!...</div>;
 
     return (
-        <div className="p-8 max-w-7xl mx-auto">
-            {/* Encabezado Estilo IA */}
-            <div className="mb-8">
-                <h1 className="text-3xl font-black tracking-tight text-slate-900">Event Catalog</h1>
-                <p className="text-slate-500">Manage and discover upcoming corporate events across all branches.</p>
+        <div className="max-w-7xl mx-auto">
+            <div className="mb-10 flex justify-between items-end">
+                <div>
+                    <h1 className="text-4xl font-black tracking-tighter text-slate-900">Catálogo de Eventos</h1>
+                    <p className="text-slate-500 font-medium mt-2">Gestiona y descubre las actividades corporativas activas.</p>
+                </div>
+                <div className="text-right">
+                    <span className="text-2xl font-bold text-primary">{eventos.length}</span>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Eventos totales</p>
+                </div>
             </div>
 
-            {/* Grid de Tarjetas */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {eventos.map((evento) => (
-                    <EventCard key={evento.event_id || evento.id} evento={evento} />
+                    <EventCard key={evento.event_id} evento={evento} />
                 ))}
 
-                {/* Placeholder "Crear Nuevo" de la guía IA */}
-                <div className="border-2 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center p-8 gap-4 hover:border-primary hover:bg-primary/5 transition-all cursor-pointer group">
-                    <div className="size-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                        <span className="material-symbols-outlined text-4xl font-bold">add</span>
-                    </div>
-                    <div className="text-center">
-                        <h3 className="text-lg font-bold text-slate-700">Create New Event</h3>
-                        <p className="text-sm text-slate-500">Add a custom event to the catalog</p>
-                    </div>
+                {/* Placeholder para crear nuevo */}
+                <div className="border-2 border-dashed border-slate-300 rounded-2xl flex flex-col items-center justify-center p-10 hover:border-primary hover:bg-primary/5 transition-all cursor-pointer group">
+                    <span className="material-symbols-outlined text-5xl text-slate-300 group-hover:text-primary mb-4 transition-colors">add_circle</span>
+                    <p className="font-bold text-slate-500 group-hover:text-primary transition-colors">Nuevo Evento</p>
                 </div>
             </div>
         </div>
