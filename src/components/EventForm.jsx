@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Button } from './ui/Button';
 
 export const EventForm = () => {
-    // --- NUEVO: Estado para las categorías reales ---
+    // Estados para datos dinámicos
     const [categories, setCategories] = useState([]);
+    const [companies, setCompanies] = useState([]);
+    const [users, setUsers] = useState([]);
 
     const [formData, setFormData] = useState({
         event_name: '',
@@ -11,23 +13,36 @@ export const EventForm = () => {
         start_date: '',
         end_date: '',
         location: '',
-        max_attendanse: '',
+        max_attendanse: '', // Mantener la "s" por el error en backend
         category_id: '',
-        company_id: '7dd0180e-d2b9-439f-9bb2-6c7e5ea46082' // Grupo Theta
+        company_id: '',
+        organizer_id: ''
     });
 
-    // --- NUEVO: Cargar categorías del Backend ---
+    // Carga de datos desde NestJS
     useEffect(() => {
-        const loadCategories = async () => {
+        const fetchData = async () => {
             try {
-                const res = await fetch('http://localhost:3000/categorias');
-                const data = await res.json();
-                setCategories(data);
+                const [resCat, resComp, resUser] = await Promise.all([
+                    fetch('http://localhost:3000/categorias'),
+                    fetch('http://localhost:3000/empresas'),
+                    fetch('http://localhost:3000/usuarios')
+                ]);
+
+                const [dataCat, dataComp, dataUser] = await Promise.all([
+                    resCat.json(),
+                    resComp.json(),
+                    resUser.json()
+                ]);
+
+                setCategories(dataCat);
+                setCompanies(dataComp);
+                setUsers(dataUser);
             } catch (err) {
-                console.error("Error al obtener categorías dinámicas:", err);
+                console.error("Error cargando el ecosistema iMeet!:", err);
             }
         };
-        loadCategories();
+        fetchData();
     }, []);
 
     const handleChange = (e) => {
@@ -46,7 +61,7 @@ export const EventForm = () => {
             location: formData.location,
             max_attendanse: parseInt(formData.max_attendanse),
             category: { category_id: parseInt(formData.category_id) },
-            organizer: { user_id: "4518bfd3-3340-4a2b-be47-f485fae63d7d" },
+            organizer: { user_id: formData.organizer_id },
             company: { company_id: formData.company_id }
         };
 
@@ -59,26 +74,30 @@ export const EventForm = () => {
 
             if (res.ok) {
                 alert("¡iMeet! registró el evento con éxito!");
-                setFormData({ ...formData, event_name: '', description: '', start_date: '', end_date: '', location: '', max_attendanse: '', category_id: '' });
+                // Opcional: resetear formulario aquí
+            } else {
+                const error = await res.json();
+                alert(`Error: ${error.message}`);
             }
         } catch (err) {
-            console.error("Error al conectar con la API:", err);
+            console.error("Fallo de conexión:", err);
         }
     };
 
-    // Clases constantes para mantener el diseño pro
+    // Estilos constantes que te gustaron
     const labelClass = "block text-[11px] font-extrabold uppercase text-slate-400 mb-2 tracking-wider";
-    const inputClass = "w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-slate-300 text-sm";
+    // Añadimos "text-slate-900" para asegurar visibilidad
+    const inputClass = "w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-slate-300 text-sm text-slate-900";
     const sectionTitle = "text-[13px] text-primary font-bold uppercase tracking-widest mb-6 pb-2 border-b border-slate-100 flex items-center gap-2";
 
     return (
         <div className="max-w-4xl mx-auto bg-white rounded-3xl p-10 shadow-sm border border-slate-100">
-            <header className="mb-10">
-                <h2 className="text-3xl font-black text-slate-900 tracking-tighter">Registrar Evento</h2>
-                <p className="text-slate-500 font-medium">Configura los detalles del próximo encuentro en iMeet!</p>
+            <header className="mb-10 text-center">
+                <h2 className="text-3xl font-black text-slate-900 tracking-tighter">Planificador de Eventos</h2>
+                <p className="text-slate-500 font-medium italic text-sm">Gestiona la logística de iMeet! de forma centralizada</p>
             </header>
 
-            <form onSubmit={handleSubmit} className="space-y-10">
+            <form onSubmit={handleSubmit} className="space-y-12">
 
                 {/* SECCIÓN 1: INFORMACIÓN GENERAL */}
                 <section>
@@ -90,37 +109,27 @@ export const EventForm = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="md:col-span-2">
                             <label className={labelClass}>Nombre Oficial del Evento</label>
-                            <input name="event_name" value={formData.event_name} onChange={handleChange} className={inputClass} placeholder="Ej. Tech Summit 2026" required />
+                            <input name="event_name" value={formData.event_name} onChange={handleChange} className={inputClass} placeholder="Ej. Cumbre de Innovación 2026" required />
                         </div>
 
                         <div className="md:col-span-2">
                             <label className={labelClass}>Descripción y Objetivos</label>
-                            <textarea name="description" value={formData.description} onChange={handleChange} className={`${inputClass} h-28 resize-none`} placeholder="Describe el propósito del evento..." required />
+                            <textarea name="description" value={formData.description} onChange={handleChange} className={`${inputClass} h-28 resize-none`} placeholder="Describe brevemente el propósito del evento..." required />
                         </div>
 
                         <div>
-                            <label className={labelClass}>Categoría</label>
-                            <select
-                                name="category_id"
-                                value={formData.category_id}
-                                onChange={handleChange}
-                                className={inputClass}
-                                required
-                            >
-                                <option value="">Seleccione una categoría...</option>
-                                {/* --- DINÁMICO: Aquí se cargan tus categorías --- */}
-                                {categories.map((cat) => (
-                                    <option key={cat.category_id} value={cat.category_id}>
-                                        {cat.category_name}
-                                    </option>
-                                ))}
+                            <label className={labelClass}>Categoría del Evento</label>
+                            <select name="category_id" value={formData.category_id} onChange={handleChange} className={inputClass} required>
+                                <option value="">Seleccione categoría...</option>
+                                {categories.map(c => <option key={c.category_id} value={c.category_id}>{c.category_name}</option>)}
                             </select>
                         </div>
 
                         <div>
                             <label className={labelClass}>Empresa Anfitriona</label>
                             <select name="company_id" value={formData.company_id} onChange={handleChange} className={inputClass} required>
-                                <option value="7dd0180e-d2b9-439f-9bb2-6c7e5ea46082">Grupo Theta S.A. de C.V.</option>
+                                <option value="">Seleccione empresa...</option>
+                                {companies.map(c => <option key={c.company_id} value={c.company_id}>{c.company_name}</option>)}
                             </select>
                         </div>
                     </div>
@@ -144,10 +153,18 @@ export const EventForm = () => {
                             <input type="datetime-local" name="end_date" value={formData.end_date} onChange={handleChange} className={inputClass} required />
                         </div>
 
+                        <div className="md:col-span-2">
+                            <label className={labelClass}>Organizador Responsable</label>
+                            <select name="organizer_id" value={formData.organizer_id} onChange={handleChange} className={inputClass} required>
+                                <option value="">Asignar un usuario responsable...</option>
+                                {users.map(u => <option key={u.user_id} value={u.user_id}>{u.username}</option>)}
+                            </select>
+                        </div>
+
                         <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div className="md:col-span-2">
-                                <label className={labelClass}>Dirección o Sede</label>
-                                <input name="location" value={formData.location} onChange={handleChange} className={inputClass} placeholder="Ej. Hotel Sheraton" required />
+                                <label className={labelClass}>Sede / Ubicación</label>
+                                <input name="location" value={formData.location} onChange={handleChange} className={inputClass} placeholder="Ej. Auditorio ESEN" required />
                             </div>
                             <div>
                                 <label className={labelClass}>Aforo Máximo</label>
@@ -157,9 +174,9 @@ export const EventForm = () => {
                     </div>
                 </section>
 
-                <footer className="pt-6 border-t border-slate-50 flex justify-end gap-4">
-                    <Button variant="secondary">Cancelar</Button>
-                    <Button type="submit">Finalizar Registro</Button>
+                <footer className="pt-8 border-t border-slate-50 flex justify-end gap-4">
+                    <Button variant="secondary">Descartar</Button>
+                    <Button type="submit">Publicar en iMeet!</Button>
                 </footer>
             </form>
         </div>
