@@ -6,7 +6,7 @@ export const EventCatalog = () => {
     const [cargando, setCargando] = useState(true);
 
     useEffect(() => {
-        // GET a la API de tus compañeros
+        // GET a la API
         fetch('http://localhost:3000/eventos')
             .then(res => res.json())
             .then(data => {

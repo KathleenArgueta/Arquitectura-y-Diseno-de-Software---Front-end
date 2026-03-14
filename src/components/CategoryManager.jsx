@@ -16,12 +16,12 @@ export const CategoryManager = () => {
         }
     };
 
-    // 2. Ejecutamos el useEffect correctamente
+    //Ejecutamos el useEffect correctamente
     useEffect(() => {
         fetchCategories();
     }, []);
 
-    // 2. Guardar nueva categoría
+    //Guardamos la nueva categoría
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!newCategory.trim()) return;
@@ -65,7 +65,7 @@ export const CategoryManager = () => {
                 </div>
             </form>
 
-            {/* Lista de Categorías en Tabla Pro */}
+            {/* Lista de Categorías*/}
             <div className="overflow-hidden border border-slate-100 rounded-2xl">
                 <table className="w-full text-left border-collapse">
                     <thead>

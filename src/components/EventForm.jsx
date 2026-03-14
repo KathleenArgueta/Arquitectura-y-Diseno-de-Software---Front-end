@@ -12,7 +12,7 @@ export const EventForm = () => {
         start_date: '',
         end_date: '',
         location: '',
-        max_attendanse: '', // Mantenemos la "s" por la entidad en backend
+        max_attendanse: '', // Mantenemos la "s" por el error que se nos fue en la BD
         category_id: '',
         company_id: '',
         organizer_id: ''
@@ -51,7 +51,7 @@ export const EventForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Estructura exacta según entidades del backend
+        // Estructura del payload 
         const payload = {
             event_name: formData.event_name,
             description: formData.description,

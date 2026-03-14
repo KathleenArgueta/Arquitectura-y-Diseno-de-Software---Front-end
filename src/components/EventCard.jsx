@@ -2,8 +2,8 @@ import React from 'react';
 import { Button } from './ui/Button';
 
 export const EventCard = ({ evento }) => {
-    // Calculamos el porcentaje de asistencia (simulado por ahora)
-    const attendanceCount = 420; // Esto luego vendrá del módulo de inscripciones
+    // Calculamos el porcentaje de asistencia 
+    const attendanceCount = 420; // Este dato vendrá del módulo de inscripciones @jade lo modificas porfa
     const percentage = Math.min((attendanceCount / evento.max_attendanse) * 100, 100);
 
     return (
@@ -32,7 +32,7 @@ export const EventCard = ({ evento }) => {
                     <span className="text-xs font-medium truncate">{evento.location}</span>
                 </div>
 
-                {/* Barra de Progreso de Asistencia (Métrica clave de la guía IA) */}
+                {/* Barra de Progreso de Asistencia*/}
                 <div className="space-y-2 mb-4">
                     <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider">
                         <span className="text-slate-400 font-bold">Asistencia</span>
