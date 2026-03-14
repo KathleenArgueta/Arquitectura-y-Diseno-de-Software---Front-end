@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Button } from './ui/Button';
 
 export const EventForm = () => {
-    // Estados para datos dinámicos
     const [categories, setCategories] = useState([]);
     const [companies, setCompanies] = useState([]);
     const [users, setUsers] = useState([]);
@@ -13,13 +12,12 @@ export const EventForm = () => {
         start_date: '',
         end_date: '',
         location: '',
-        max_attendanse: '', // Mantener la "s" por el error en backend
+        max_attendanse: '', // Mantenemos la "s" por la entidad en backend
         category_id: '',
         company_id: '',
         organizer_id: ''
     });
 
-    // Carga de datos desde NestJS
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -39,7 +37,7 @@ export const EventForm = () => {
                 setCompanies(dataComp);
                 setUsers(dataUser);
             } catch (err) {
-                console.error("Error cargando el ecosistema iMeet!:", err);
+                console.error("Error cargando datos maestros:", err);
             }
         };
         fetchData();
@@ -53,6 +51,7 @@ export const EventForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // Estructura exacta según entidades del backend
         const payload = {
             event_name: formData.event_name,
             description: formData.description,
@@ -74,7 +73,6 @@ export const EventForm = () => {
 
             if (res.ok) {
                 alert("¡iMeet! registró el evento con éxito!");
-                // Opcional: resetear formulario aquí
             } else {
                 const error = await res.json();
                 alert(`Error: ${error.message}`);
@@ -84,9 +82,7 @@ export const EventForm = () => {
         }
     };
 
-    // Estilos constantes que te gustaron
     const labelClass = "block text-[11px] font-extrabold uppercase text-slate-400 mb-2 tracking-wider";
-    // Añadimos "text-slate-900" para asegurar visibilidad
     const inputClass = "w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-slate-300 text-sm text-slate-900";
     const sectionTitle = "text-[13px] text-primary font-bold uppercase tracking-widest mb-6 pb-2 border-b border-slate-100 flex items-center gap-2";
 
@@ -98,14 +94,11 @@ export const EventForm = () => {
             </header>
 
             <form onSubmit={handleSubmit} className="space-y-12">
-
-                {/* SECCIÓN 1: INFORMACIÓN GENERAL */}
                 <section>
                     <h3 className={sectionTitle}>
                         <span className="size-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[10px]">1</span>
                         Información General
                     </h3>
-
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="md:col-span-2">
                             <label className={labelClass}>Nombre Oficial del Evento</label>
@@ -114,14 +107,16 @@ export const EventForm = () => {
 
                         <div className="md:col-span-2">
                             <label className={labelClass}>Descripción y Objetivos</label>
-                            <textarea name="description" value={formData.description} onChange={handleChange} className={`${inputClass} h-28 resize-none`} placeholder="Describe brevemente el propósito del evento..." required />
+                            <textarea name="description" value={formData.description} onChange={handleChange} className={`${inputClass} h-28 resize-none`} placeholder="Propósito..." required />
                         </div>
 
                         <div>
                             <label className={labelClass}>Categoría del Evento</label>
                             <select name="category_id" value={formData.category_id} onChange={handleChange} className={inputClass} required>
                                 <option value="">Seleccione categoría...</option>
-                                {categories.map(c => <option key={c.category_id} value={c.category_id}>{c.category_name}</option>)}
+                                {categories.map(c => (
+                                    <option key={c.category_id} value={c.category_id}>{c.category_name}</option>
+                                ))}
                             </select>
                         </div>
 
@@ -129,25 +124,24 @@ export const EventForm = () => {
                             <label className={labelClass}>Empresa Anfitriona</label>
                             <select name="company_id" value={formData.company_id} onChange={handleChange} className={inputClass} required>
                                 <option value="">Seleccione empresa...</option>
-                                {companies.map(c => <option key={c.company_id} value={c.company_id}>{c.company_name}</option>)}
+                                {companies.map(c => (
+                                    <option key={c.company_id} value={c.company_id}>{c.company_name}</option>
+                                ))}
                             </select>
                         </div>
                     </div>
                 </section>
 
-                {/* SECCIÓN 2: LOGÍSTICA Y UBICACIÓN */}
                 <section>
                     <h3 className={sectionTitle}>
                         <span className="size-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[10px]">2</span>
                         Logística y Ubicación
                     </h3>
-
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label className={labelClass}>Fecha y Hora de Inicio</label>
                             <input type="datetime-local" name="start_date" value={formData.start_date} onChange={handleChange} className={inputClass} required />
                         </div>
-
                         <div>
                             <label className={labelClass}>Fecha y Hora de Fin</label>
                             <input type="datetime-local" name="end_date" value={formData.end_date} onChange={handleChange} className={inputClass} required />
@@ -157,7 +151,12 @@ export const EventForm = () => {
                             <label className={labelClass}>Organizador Responsable</label>
                             <select name="organizer_id" value={formData.organizer_id} onChange={handleChange} className={inputClass} required>
                                 <option value="">Asignar un usuario responsable...</option>
-                                {users.map(u => <option key={u.user_id} value={u.user_id}>{u.username}</option>)}
+                                {users.map(u => (
+                                    <option key={u.user_id} value={u.user_id}>
+                                        {/* USAMOS user_name PORQUE ASÍ ESTÁ EN LA ENTIDAD DEL BACKEND */}
+                                        {u.user_name}
+                                    </option>
+                                ))}
                             </select>
                         </div>
 
@@ -175,7 +174,7 @@ export const EventForm = () => {
                 </section>
 
                 <footer className="pt-8 border-t border-slate-50 flex justify-end gap-4">
-                    <Button variant="secondary">Descartar</Button>
+                    <Button variant="secondary" type="button" onClick={() => window.location.reload()}>Descartar</Button>
                     <Button type="submit">Publicar en iMeet!</Button>
                 </footer>
             </form>
