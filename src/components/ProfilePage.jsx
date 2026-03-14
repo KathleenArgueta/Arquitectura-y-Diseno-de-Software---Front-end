@@ -71,13 +71,8 @@ export function ProfilePage() {
     <div className="min-h-screen bg-[#F4F7F6] flex items-center justify-center p-6">
       <div className="w-full max-w-md">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-          {/* Header azul decorativo */}
-          <div
-            className="h-24 w-full relative"
-            style={{ background: 'linear-gradient(135deg, #0056b3 0%, #007BFF 100%)' }}
-          />
 
-          <div className="px-8 pb-8 -mt-12">
+          <div className="px-8 pb-8 pt-8">
             {/* Avatar */}
             <div className="flex justify-center mb-4">
               <div className="w-24 h-24 rounded-full border-4 border-white bg-[#007BFF] flex items-center justify-center shadow-md">

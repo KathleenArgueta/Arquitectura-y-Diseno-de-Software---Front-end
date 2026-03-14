@@ -10,6 +10,7 @@ import { EventCatalog } from './components/EventCatalog';
 import { EventForm } from './components/EventForm';
 import { CategoryManager } from './components/CategoryManager';
 import { ForgotPasswordPage } from './components/ForgotPasswordPage';
+import { AdminUsersPage } from './components/AdminUsersPage';
 
 function MainLayout() {
   return (
@@ -46,6 +47,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/admin/users" element={<AdminUsersPage />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
