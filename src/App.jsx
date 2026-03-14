@@ -1,10 +1,16 @@
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { LoginPage } from './components/LoginPage';
+import { RegisterPage } from './components/RegisterPage';
+
 import { Sidebar } from './components/ui/Sidebar';
 import { Header } from './components/ui/Header';
 import { EventCatalog } from './components/EventCatalog';
 import { EventForm } from './components/EventForm';
 import { CategoryManager } from './components/CategoryManager';
+import { ForgotPasswordPage } from './components/ForgotPasswordPage';
 
-function App() {
+function MainLayout() {
   return (
     <div className="flex min-h-screen bg-[#f8fafc]">
       <Sidebar />
@@ -25,6 +31,22 @@ function App() {
         </main>
       </div>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/dashboard" element={<MainLayout />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 
