@@ -37,7 +37,7 @@ export function AdminUsersPage() {
     const fetchUsers = async () => {
       setIsLoading(true);
       try {
-        // TODO: Reemplazar con el endpoint real
+        // TODO: Reemplazar con el endpoint FALTA LA PARTE DE BACKEND AQUI
         // const res = await fetch('/api/users', { headers: { Authorization: `Bearer ${token}` } });
         // const data = await res.json();
         // setUsers(data.users || data);
@@ -59,7 +59,6 @@ export function AdminUsersPage() {
 
   const handleDelete = async (userId) => {
     try {
-      // TODO: await fetch(`/api/users/${userId}`, { method: 'DELETE', ... });
       setUsers((prev) => prev.filter((u) => u.id !== userId));
       showNotification('Usuario eliminado exitosamente');
     } catch {
@@ -334,7 +333,6 @@ function CreateUserForm({ token, onSuccess, onCancel }) {
     setIsLoading(true);
     setError('');
     try {
-      // TODO: await fetch('/api/users', { method: 'POST', ... });
       await new Promise((r) => setTimeout(r, 800));
       onSuccess(formData);
     } catch (err) {

@@ -5,9 +5,6 @@ import { AuthLayout } from './ui/AuthLayout';
 
 /**
  * LoginPage: Pantalla de inicio de sesión.
- * - Consume el endpoint POST /api/auth/login
- * - Guarda token JWT via AuthContext.login()
- * - Redirige a la página original si venía de un ProtectedRoute
  */
 export function LoginPage() {
   const navigate = useNavigate();
@@ -25,7 +22,7 @@ export function LoginPage() {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     if (error) setError('');
   };
-  
+
   const handleSubmit = async (e) => {
   e.preventDefault();
   setIsLoading(true);

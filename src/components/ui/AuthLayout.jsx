@@ -1,6 +1,5 @@
 /**
  * AuthLayout: Layout compartido para todas las pantallas de autenticación.
- * Fondo con degradado azul (primario → oscuro) con patrón geométrico decorativo.
  * La card blanca flota centrada sobre este fondo.
  */
 export function AuthLayout({ children }) {
