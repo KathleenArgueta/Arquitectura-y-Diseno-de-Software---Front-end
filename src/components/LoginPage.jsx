@@ -25,36 +25,37 @@ export function LoginPage() {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     if (error) setError('');
   };
-
+  
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError('');
+  e.preventDefault();
+  setIsLoading(true);
+  setError('');
 
-    try {
-      // TODO: Reemplazar con el endpoint real del backend
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+  try {
+    const response = await fetch('/api/usuarios');
+    const usuarios = await response.json();
 
-      const data = await response.json();
+    const usuario = usuarios.find(u => u.user_email === formData.email);
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Credenciales inválidas');
-      }
+    if (!usuario) throw new Error('No existe una cuenta con ese correo');
+    if (usuario.user_password !== formData.password) throw new Error('Contraseña incorrecta');
 
-      // data debe contener { token, user: { id, name, email, role } }
-      login(data.user, data.token);
-      navigate(from, { replace: true });
-    } catch (err) {
-      setError(err.message || 'Error al iniciar sesión. Intenta de nuevo.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    const userData = {
+      id: usuario.user_id,
+      name: usuario.user_name,
+      email: usuario.user_email,
+      role: usuario.role?.role_name || 'attendee',
+    };
 
+    login(userData, `token-${usuario.user_id}`);
+    navigate(from, { replace: true });
+
+  } catch (err) {
+    setError(err.message || 'Error al iniciar sesión');
+  } finally {
+    setIsLoading(false);
+  }
+};
   return (
     <AuthLayout>
       <div className="mb-6">
