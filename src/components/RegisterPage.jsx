@@ -41,42 +41,38 @@ export function RegisterPage() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const validationErrors = validate();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
+  e.preventDefault();
+  const validationErrors = validate();
+  if (Object.keys(validationErrors).length > 0) {
+    setErrors(validationErrors);
+    return;
+  }
 
-    setIsLoading(true);
-    setApiError('');
+  setIsLoading(true);
+  setApiError('');
 
-    try {
-      // TODO: Reemplazar con el endpoint real del backend
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
+  try {
+    const response = await fetch('/api/usuarios', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_name: formData.name,
+        user_email: formData.email,
+        user_password: formData.password,
+        role: { role_id: 3 }, // 3 = attendee por defecto
+      }),
+    });
 
-      const data = await response.json();
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Error al crear la cuenta');
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Error al crear la cuenta');
-      }
-
-      // Registro exitoso → redirigir al login
-      navigate('/login', { state: { message: 'Cuenta creada exitosamente. Inicia sesión.' } });
-    } catch (err) {
-      setApiError(err.message || 'Error inesperado. Intenta de nuevo.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    navigate('/login', { state: { message: 'Cuenta creada. Inicia sesión.' } });
+  } catch (err) {
+    setApiError(err.message || 'Error inesperado.');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const inputClass = (field) =>
     `w-full px-4 py-2.5 border rounded-lg text-sm text-gray-900 placeholder-gray-400 transition-all focus:outline-none focus:ring-2 ${
