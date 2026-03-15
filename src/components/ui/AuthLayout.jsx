@@ -1,3 +1,5 @@
+import { Outlet } from "react-router-dom";
+
 /**
  * AuthLayout: Layout compartido para todas las pantallas de autenticación.
  * La card blanca flota centrada sobre este fondo.
@@ -30,7 +32,7 @@ export function AuthLayout({ children }) {
           className="bg-white rounded-2xl shadow-2xl p-8"
           style={{ boxShadow: '0 25px 50px rgba(0, 0, 0, 0.25)' }}
         >
-          {children}
+          <Outlet/>
         </div>
 
         <p className="text-center text-blue-200/60 text-xs mt-6">

@@ -1,11 +1,14 @@
 import React from 'react';
+import { Link } from "react-router-dom";
 
 export const Sidebar = () => {
     const items = [
-        { nombre: 'Panel de Control', icono: 'dashboard', activo: false },
-        { nombre: 'Eventos', icono: 'calendar_today', activo: true },
-        { nombre: 'Empresas', icono: 'corporate_fare', activo: false },
-        { nombre: 'Asistentes', icono: 'groups', activo: false },
+        { nombre: 'Panel de Control', icono: 'dashboard', link: "/dashboard" },
+        { nombre: 'Eventos', icono: 'calendar_today', link: "/dashboard" },
+        { nombre: 'Empresas', icono: 'corporate_fare', link: "/empresas" },
+        { nombre: 'Asistentes', icono: 'groups', link: "/asistentes" },
+        { nombre: 'Usuarios', icono: 'manage_accounts', link: "/admin/users" },
+        { nombre: 'Mi Perfil', icono: 'person', link: "/profile" },
     ];
 
     return (
@@ -22,10 +25,14 @@ export const Sidebar = () => {
 
             <nav className="flex-1 px-4 mt-6 space-y-1">
                 {items.map((item) => (
-                    <a key={item.nombre} href="#" className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all ${item.activo ? 'bg-primary/10 text-primary font-bold' : 'hover:bg-slate-800 hover:text-white'}`}>
+                    <Link
+                        key={item.nombre}
+                        to={item.link}
+                        className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-slate-800 hover:text-white transition-all"
+                    >
                         <span className="material-symbols-outlined">{item.icono}</span>
                         <span className="text-sm">{item.nombre}</span>
-                    </a>
+                    </Link>
                 ))}
             </nav>
 
