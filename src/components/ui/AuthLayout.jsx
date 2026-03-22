@@ -32,7 +32,7 @@ export function AuthLayout({ children }) {
           className="bg-white rounded-2xl shadow-2xl p-8"
           style={{ boxShadow: '0 25px 50px rgba(0, 0, 0, 0.25)' }}
         >
-          <Outlet/>
+          {children}
         </div>
 
         <p className="text-center text-blue-200/60 text-xs mt-6">
