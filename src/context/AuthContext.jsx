@@ -7,13 +7,7 @@ const AuthContext = createContext(null);
  * Wrap toda la app con este provider en main.jsx.
  */
 export function AuthProvider({ children }) {
-  /**const [user, setUser] = useState(null);*/
-  const [user, setUser] = useState({
-  id: '1',
-  name: 'Nicki Prueba',
-  email: 'nicki@empresa.com',
-  role: 'admin',
-  });
+  const [user, setUser] = useState(null);
   const [token, setToken] = useState(() => localStorage.getItem('imeet_token'));
   const [isLoading, setIsLoading] = useState(true);
 

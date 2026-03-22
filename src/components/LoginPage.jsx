@@ -3,9 +3,6 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { AuthLayout } from './ui/AuthLayout';
 
-/**
- * LoginPage: Pantalla de inicio de sesión.
- */
 export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -24,35 +21,43 @@ export function LoginPage() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setIsLoading(true);
-  setError('');
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
 
-  try {
-    const response = await fetch('/api/usuarios');
-    const usuarios = await response.json();
+    try {
+      const response = await fetch('/api/usuarios/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_email: formData.email,
+          user_password: formData.password,
+        }),
+      });
 
-    const usuario = usuarios.find(u => u.user_email === formData.email);
+      const data = await response.json();
 
-    if (!usuario) throw new Error('No existe una cuenta con ese correo');
-    if (usuario.user_password !== formData.password) throw new Error('Contraseña incorrecta');
+      if (!response.ok) {
+        throw new Error(data.message || 'Credenciales inválidas');
+      }
 
-    const userData = {
-      id: usuario.user_id,
-      name: usuario.user_name,
-      email: usuario.user_email,
-      role: usuario.role?.role_name || 'attendee',
-    };
+      const userData = {
+        id: data.user_id,
+        name: data.user_name,
+        email: formData.email,
+        role: data.role || 'attendee',
+      };
 
-    login(userData, `token-${usuario.user_id}`);
-    navigate(from, { replace: true });
+      login(userData, data.access_token);
+      navigate(from, { replace: true });
 
-  } catch (err) {
-    setError(err.message || 'Error al iniciar sesión');
-  } finally {
-    setIsLoading(false);
-  }
-};
+    } catch (err) {
+      setError(err.message || 'Error al iniciar sesión');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <AuthLayout>
       <div className="mb-6">
@@ -70,7 +75,6 @@ export function LoginPage() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Email */}
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
             Correo electrónico
@@ -88,7 +92,6 @@ export function LoginPage() {
           />
         </div>
 
-        {/* Password */}
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
@@ -132,7 +135,6 @@ export function LoginPage() {
           </div>
         </div>
 
-        {/* Submit */}
         <button
           type="submit"
           disabled={isLoading}

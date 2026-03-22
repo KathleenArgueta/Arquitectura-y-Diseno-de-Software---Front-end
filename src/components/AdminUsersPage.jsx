@@ -3,21 +3,12 @@ import { useAuth } from '../context/AuthContext';
 
 const ROLES = ['admin', 'organizer', 'attendee'];
 const ROLE_LABELS = { admin: 'Admin', organizer: 'Organizador', attendee: 'Asistente' };
-const STATUS_LABELS = { active: 'Activo', pending: 'Pendiente', inactive: 'Inactivo' };
+const ROLE_ID = { admin: 1, organizer: 2, attendee: 3 };
 const STATUS_BADGE = {
   active: 'bg-green-100 text-green-800',
   pending: 'bg-yellow-100 text-yellow-800',
   inactive: 'bg-gray-100 text-gray-600',
 };
-
-const MOCK_USERS = [
-  { id: 1, name: 'Carlos Mendoza', email: 'c.mendoza@corporate.com', role: 'admin', status: 'active' },
-  { id: 2, name: 'Elena Rodríguez', email: 'elena.r@events.net', role: 'organizer', status: 'active' },
-  { id: 3, name: 'Mark Thompson', email: 'mark.t@agency.com', role: 'attendee', status: 'pending' },
-  { id: 4, name: 'Sarah Jenkins', email: 's.jenkins@corp.com', role: 'organizer', status: 'active' },
-  { id: 5, name: 'Luis García', email: 'l.garcia@empresa.com', role: 'attendee', status: 'active' },
-  { id: 6, name: 'Ana Martínez', email: 'a.martinez@corp.com', role: 'attendee', status: 'inactive' },
-];
 
 export function AdminUsersPage() {
   const { user: currentUser, token } = useAuth();
@@ -34,23 +25,31 @@ export function AdminUsersPage() {
   const ITEMS_PER_PAGE = 5;
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      setIsLoading(true);
-      try {
-        // TODO: Reemplazar con el endpoint FALTA LA PARTE DE BACKEND AQUI
-        // const res = await fetch('/api/users', { headers: { Authorization: `Bearer ${token}` } });
-        // const data = await res.json();
-        // setUsers(data.users || data);
-        await new Promise((r) => setTimeout(r, 600));
-        setUsers(MOCK_USERS);
-      } catch {
-        showNotification('Error al cargar usuarios', 'error');
-      } finally {
-        setIsLoading(false);
-      }
-    };
     fetchUsers();
   }, [token]);
+
+  const fetchUsers = async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch('/api/usuarios', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      // Mapear campos del backend al formato del componente
+      const mapped = data.map((u) => ({
+        id: u.user_id,
+        name: u.user_name,
+        email: u.user_email,
+        role: u.role?.role_name || 'attendee',
+        status: 'active',
+      }));
+      setUsers(mapped);
+    } catch {
+      showNotification('Error al cargar usuarios', 'error');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const showNotification = (message, type = 'success') => {
     setNotification({ message, type });
@@ -59,6 +58,11 @@ export function AdminUsersPage() {
 
   const handleDelete = async (userId) => {
     try {
+      const response = await fetch(`/api/usuarios/${userId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) throw new Error('Error al eliminar');
       setUsers((prev) => prev.filter((u) => u.id !== userId));
       showNotification('Usuario eliminado exitosamente');
     } catch {
@@ -83,12 +87,11 @@ export function AdminUsersPage() {
     total: users.length,
     active: users.filter((u) => u.status === 'active').length,
     organizers: users.filter((u) => u.role === 'organizer').length,
-    newToday: 3,
+    newToday: 0,
   };
 
   return (
     <div className="min-h-screen bg-[#F4F7F6]">
-      {/* Notificación toast */}
       {notification && (
         <div className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg text-sm font-medium flex items-center gap-2 transition-all ${
           notification.type === 'error' ? 'bg-red-600 text-white' : 'bg-green-600 text-white'
@@ -104,7 +107,6 @@ export function AdminUsersPage() {
         </div>
       )}
 
-      {/* Header */}
       <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between sticky top-0 z-10 shadow-sm">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-[#007BFF] rounded-lg flex items-center justify-center text-white font-bold text-sm shadow-sm">
@@ -113,9 +115,7 @@ export function AdminUsersPage() {
           <h1 className="text-lg font-bold text-gray-900">iMeet! Admin</h1>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-sm font-medium text-gray-700 hidden sm:block">
-            {currentUser?.name}
-          </span>
+          <span className="text-sm font-medium text-gray-700 hidden sm:block">{currentUser?.name}</span>
           <div className="w-8 h-8 bg-[#007BFF] rounded-full flex items-center justify-center text-white font-bold text-sm">
             {currentUser?.name?.charAt(0)?.toUpperCase() || 'A'}
           </div>
@@ -123,7 +123,6 @@ export function AdminUsersPage() {
       </header>
 
       <main className="max-w-6xl mx-auto p-6 space-y-6">
-        {/* Título */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">Gestión de Usuarios</h2>
@@ -140,11 +139,10 @@ export function AdminUsersPage() {
           </button>
         </div>
 
-        {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { label: 'Total Usuarios', value: stats.total, color: 'text-gray-900' },
-            { label: 'Activos ahora', value: stats.active, color: 'text-green-600' },
+            { label: 'Activos', value: stats.active, color: 'text-green-600' },
             { label: 'Organizadores', value: stats.organizers, color: 'text-gray-900' },
             { label: 'Nuevos hoy', value: stats.newToday, color: 'text-[#007BFF]' },
           ].map((stat) => (
@@ -155,9 +153,7 @@ export function AdminUsersPage() {
           ))}
         </div>
 
-        {/* Tabla */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-          {/* Búsqueda y filtro */}
           <div className="p-4 border-b border-gray-100 bg-gray-50/50 flex flex-col sm:flex-row gap-3">
             <div className="relative flex-grow">
               <svg className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6C757D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -183,7 +179,6 @@ export function AdminUsersPage() {
             </select>
           </div>
 
-          {/* Contenido tabla */}
           <div className="overflow-x-auto">
             {isLoading ? (
               <div className="flex items-center justify-center py-12">
@@ -204,8 +199,8 @@ export function AdminUsersPage() {
               <table className="min-w-full divide-y divide-gray-100">
                 <thead className="bg-gray-50">
                   <tr>
-                    {['Nombre', 'Correo', 'Rol', 'Estado', 'Acciones'].map((h, i) => (
-                      <th key={h} className={`px-6 py-3 text-xs font-semibold text-[#6C757D] uppercase tracking-wider ${i === 4 ? 'text-right' : 'text-left'}`}>
+                    {['Nombre', 'Correo', 'Rol', 'Acciones'].map((h, i) => (
+                      <th key={h} className={`px-6 py-3 text-xs font-semibold text-[#6C757D] uppercase tracking-wider ${i === 3 ? 'text-right' : 'text-left'}`}>
                         {h}
                       </th>
                     ))}
@@ -224,13 +219,7 @@ export function AdminUsersPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6C757D]">{u.email}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{ROLE_LABELS[u.role] || u.role}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex px-2.5 py-0.5 text-xs font-semibold rounded-full ${STATUS_BADGE[u.status] || 'bg-gray-100 text-gray-600'}`}>
-                          {STATUS_LABELS[u.status] || u.status}
-                        </span>
-                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                        <button className="text-[#007BFF] hover:text-[#0056b3] font-medium mr-4 transition-colors">Editar</button>
                         <button onClick={() => setDeleteTarget(u)} className="text-red-500 hover:text-red-700 font-medium transition-colors">Eliminar</button>
                       </td>
                     </tr>
@@ -240,7 +229,6 @@ export function AdminUsersPage() {
             )}
           </div>
 
-          {/* Paginación */}
           {!isLoading && filtered.length > ITEMS_PER_PAGE && (
             <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between">
               <p className="text-sm text-[#6C757D]">
@@ -272,7 +260,6 @@ export function AdminUsersPage() {
         </div>
       </main>
 
-      {/* Modal: Confirmar eliminación */}
       {deleteTarget && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6">
@@ -299,7 +286,6 @@ export function AdminUsersPage() {
         </div>
       )}
 
-      {/* Modal: Crear usuario */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
@@ -308,7 +294,7 @@ export function AdminUsersPage() {
             <CreateUserForm
               token={token}
               onSuccess={(newUser) => {
-                setUsers((prev) => [...prev, { ...newUser, id: Date.now(), status: 'pending' }]);
+                fetchUsers();
                 setShowCreateModal(false);
                 showNotification('Usuario creado exitosamente');
               }}
@@ -328,13 +314,28 @@ function CreateUserForm({ token, onSuccess, onCancel }) {
 
   const handleChange = (e) => setFormData((p) => ({ ...p, [e.target.name]: e.target.value }));
 
+  const ROLES = ['admin', 'organizer', 'attendee'];
+  const ROLE_LABELS = { admin: 'Admin', organizer: 'Organizador', attendee: 'Asistente' };
+  const ROLE_ID = { admin: 1, organizer: 2, attendee: 3 };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
     try {
-      await new Promise((r) => setTimeout(r, 800));
-      onSuccess(formData);
+      const response = await fetch('/api/usuarios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_name: formData.name,
+          user_email: formData.email,
+          user_password: formData.password,
+          role: { role_id: ROLE_ID[formData.role] },
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Error al crear usuario');
+      onSuccess(data);
     } catch (err) {
       setError(err.message || 'Error al crear usuario');
     } finally {

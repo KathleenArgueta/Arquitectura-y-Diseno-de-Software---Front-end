@@ -33,14 +33,16 @@ export function ProfilePage() {
     setSuccessMsg('');
 
     try {
-      // TODO: Reemplazar con el endpoint real del backend
-      const response = await fetch(`/api/users/${user.id}`, {
+      const response = await fetch(`/api/usuarios/${user.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          user_name: formData.name,
+          user_email: formData.email,
+        }),
       });
 
       const data = await response.json();
@@ -71,7 +73,6 @@ export function ProfilePage() {
     <div className="min-h-screen bg-[#F4F7F6] flex items-center justify-center p-6">
       <div className="w-full max-w-md">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-
           <div className="px-8 pb-8 pt-8">
             {/* Avatar */}
             <div className="flex justify-center mb-4">
