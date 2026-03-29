@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { EventCard } from './EventCard';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom'; // 1. Importamos useNavigate para poder hacer clic
 
 export const EventCatalog = () => {
     const [eventos, setEventos] = useState([]);
     const [cargando, setCargando] = useState(true);
+    const { isOrganizer } = useAuth();
+    const navigate = useNavigate(); // 2. Inicializamos la navegación
 
     useEffect(() => {
         const token = localStorage.getItem('imeet_token');
@@ -48,10 +52,16 @@ export const EventCatalog = () => {
                     <EventCard key={evento.event_id} evento={evento} />
                 ))}
 
-                <div className="border-2 border-dashed border-slate-300 rounded-2xl flex flex-col items-center justify-center p-10 hover:border-primary hover:bg-primary/5 transition-all cursor-pointer group">
-                    <span className="material-symbols-outlined text-5xl text-slate-300 group-hover:text-primary mb-4 transition-colors">add_circle</span>
-                    <p className="font-bold text-slate-500 group-hover:text-primary transition-colors">Nuevo Evento</p>
-                </div>
+                {/* 3. Ocultamos el botón si no es organizador, y le agregamos la función onClick */}
+                {isOrganizer() && (
+                    <div 
+                        onClick={() => navigate('/eventos/nuevo')}
+                        className="border-2 border-dashed border-slate-300 rounded-2xl flex flex-col items-center justify-center p-10 hover:border-primary hover:bg-primary/5 transition-all cursor-pointer group"
+                    >
+                        <span className="material-symbols-outlined text-5xl text-slate-300 group-hover:text-primary mb-4 transition-colors">add_circle</span>
+                        <p className="font-bold text-slate-500 group-hover:text-primary transition-colors">Nuevo Evento</p>
+                    </div>
+                )}
             </div>
         </div>
     );

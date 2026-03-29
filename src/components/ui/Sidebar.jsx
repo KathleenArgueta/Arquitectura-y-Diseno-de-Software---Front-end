@@ -1,15 +1,25 @@
 import React from 'react';
 import { Link } from "react-router-dom";
+import { useAuth } from '../../context/AuthContext';
 
 export const Sidebar = () => {
+    // 🔑 Sacamos al usuario logueado
+    const { user } = useAuth();
+
+    // Podemos ocultar opciones del menú según el rol (ej. solo admins ven usuarios)
     const items = [
         { nombre: 'Panel de Control', icono: 'dashboard', link: "/dashboard" },
         { nombre: 'Eventos', icono: 'calendar_today', link: "/dashboard" },
         { nombre: 'Empresas', icono: 'corporate_fare', link: "/empresas" },
         { nombre: 'Asistentes', icono: 'groups', link: "/asistentes" },
-        { nombre: 'Usuarios', icono: 'manage_accounts', link: "/admin/users" },
+        // Si no es admin, no ve la opción de Usuarios
+        ...(user?.role === 'admin' ? [{ nombre: 'Usuarios', icono: 'manage_accounts', link: "/admin/users" }] : []),
         { nombre: 'Mi Perfil', icono: 'person', link: "/profile" },
     ];
+
+    // Calculamos iniciales y rol para mostrar
+    const iniciales = user?.name ? user.name.substring(0, 2).toUpperCase() : 'U';
+    const rolMostrar = user?.role === 'admin' ? 'Administrador' : user?.role === 'organizer' ? 'Organizador' : 'Asistente';
 
     return (
         <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col h-screen sticky top-0">
@@ -38,10 +48,12 @@ export const Sidebar = () => {
 
             <div className="p-4 border-t border-slate-800">
                 <div className="flex items-center gap-3 p-2">
-                    <div className="size-10 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center text-xs font-bold text-white">KA</div>
+                    <div className="size-10 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center text-xs font-bold text-white">
+                        {iniciales}
+                    </div>
                     <div className="flex flex-col">
-                        <span className="text-xs font-bold text-white">Kathleen Argueta</span>
-                        <span className="text-[10px] text-slate-500 font-medium italic">Administradora</span>
+                        <span className="text-xs font-bold text-white">{user?.name || 'Invitado'}</span>
+                        <span className="text-[10px] text-slate-500 font-medium italic">{rolMostrar}</span>
                     </div>
                 </div>
             </div>
