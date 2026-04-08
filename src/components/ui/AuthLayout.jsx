@@ -1,38 +1,35 @@
-import { Outlet } from "react-router-dom";
-
 export function AuthLayout({ children }) {
   return (
-    <div
-      className="min-h-screen flex items-center justify-center p-4 sm:p-6 relative overflow-hidden"
-      style={{
-        background: '#0f172a',
-      }}
-    >
+    <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 relative overflow-hidden bg-[#f8fafc]">
+
       { }
-      <div className="relative z-10 w-full max-w-md md:max-w-2xl transition-all duration-300">
-        {/* Logo / Brand encima de la card */}
-        <div className="text-center mb-4 sm:mb-6">
-          <div className="inline-flex items-center gap-3">
-            <div className="size-8 sm:size-10 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center text-white shadow-lg">
-              <span className="material-symbols-outlined text-xl sm:text-2xl font-bold">bolt</span>
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 rounded-full blur-[100px] pointer-events-none"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-300/30 rounded-full blur-[100px] pointer-events-none"></div>
+
+      {/* Contenedor Principal */}
+      <div className="relative z-10 w-full max-w-[90%] md:max-w-md lg:max-w-lg transition-all duration-300">
+
+        {/* Logo */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-3 justify-center">
+            <div className="size-12 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/30">
+              <span className="material-symbols-outlined text-3xl font-bold">bolt</span>
             </div>
             <div className="text-left">
-              <h1 className="text-xl sm:text-2xl font-black text-white tracking-tighter italic">iMeet!</h1>
-              <p className="text-[8px] sm:text-[10px] text-blue-200 font-bold uppercase tracking-widest leading-none">Enterprise</p>
+              <h1 className="text-3xl font-black text-slate-900 tracking-tighter italic">iMeet!</h1>
+              <p className="text-[11px] text-primary font-bold uppercase tracking-widest leading-none mt-1">Enterprise</p>
             </div>
           </div>
         </div>
 
-        { }
-        <div
-          className="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 md:p-10"
-          style={{ boxShadow: '0 25px 50px rgba(0, 0, 0, 0.25)' }}
-        >
+        {/* Tarjeta con efecto*/}
+        <div className="bg-white/80 backdrop-blur-xl border border-white/50 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 sm:p-8 md:p-10">
           {children}
         </div>
 
-        <p className="text-center text-blue-200/60 text-xs mt-6">
-          © 2026 iMeet! Enterprise
+        {/* Footer del login */}
+        <p className="text-center text-slate-400 text-xs mt-8 font-medium">
+          © 2026 iMeet! Enterprise. Todos los derechos reservados.
         </p>
       </div>
     </div>
