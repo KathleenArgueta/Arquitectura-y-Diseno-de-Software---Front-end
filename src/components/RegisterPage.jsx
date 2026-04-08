@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AuthLayout } from './ui/AuthLayout';
 
 /**
  * RegisterPage: Pantalla de registro de nuevos usuarios.
@@ -59,7 +58,7 @@ export function RegisterPage() {
           user_name: formData.name,
           user_email: formData.email,
           user_password: formData.password,
-          role: { role_id: 3 }, // 3 = attendee por defecto
+          role: { role_id: 3 },
         }),
       });
 

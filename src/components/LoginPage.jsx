@@ -41,11 +41,16 @@ export function LoginPage() {
         throw new Error(data.message || 'Credenciales inválidas');
       }
 
+      const roleData = data.role?.role_id || data.role || 3;
+      let mappedRole = 'attendee';
+      if (roleData === 1) mappedRole = 'admin';
+      else if (roleData === 2) mappedRole = 'organizer';
+
       const userData = {
         id: data.user_id,
         name: data.user_name,
         email: formData.email,
-        role: data.role || 'attendee',
+        role: mappedRole,
       };
 
       login(userData, data.access_token);
