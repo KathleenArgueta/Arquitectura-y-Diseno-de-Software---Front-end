@@ -59,7 +59,7 @@ export function LoginPage() {
   };
 
   return (
-    <AuthLayout>
+    <>
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Iniciar sesión</h2>
         <p className="text-sm text-[#6C757D] mt-1">Accede a tu panel corporativo</p>
@@ -156,6 +156,6 @@ export function LoginPage() {
           Crear cuenta
         </Link>
       </p>
-    </AuthLayout>
+    </>
   );
 }

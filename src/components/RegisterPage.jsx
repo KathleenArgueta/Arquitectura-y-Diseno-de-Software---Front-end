@@ -41,48 +41,47 @@ export function RegisterPage() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  const validationErrors = validate();
-  if (Object.keys(validationErrors).length > 0) {
-    setErrors(validationErrors);
-    return;
-  }
+    e.preventDefault();
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
 
-  setIsLoading(true);
-  setApiError('');
+    setIsLoading(true);
+    setApiError('');
 
-  try {
-    const response = await fetch('http://localhost:3000/usuarios', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        user_name: formData.name,
-        user_email: formData.email,
-        user_password: formData.password,
-        role: { role_id: 3 }, // 3 = attendee por defecto
-      }),
-    });
+    try {
+      const response = await fetch('http://localhost:3000/usuarios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_name: formData.name,
+          user_email: formData.email,
+          user_password: formData.password,
+          role: { role_id: 3 }, // 3 = attendee por defecto
+        }),
+      });
 
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.message || 'Error al crear la cuenta');
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Error al crear la cuenta');
 
-    navigate('/login', { state: { message: 'Cuenta creada. Inicia sesión.' } });
-  } catch (err) {
-    setApiError(err.message || 'Error inesperado.');
-  } finally {
-    setIsLoading(false);
-  }
-};
+      navigate('/login', { state: { message: 'Cuenta creada. Inicia sesión.' } });
+    } catch (err) {
+      setApiError(err.message || 'Error inesperado.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const inputClass = (field) =>
-    `w-full px-4 py-2.5 border rounded-lg text-sm text-gray-900 placeholder-gray-400 transition-all focus:outline-none focus:ring-2 ${
-      errors[field]
-        ? 'border-red-400 focus:border-red-400 focus:ring-red-400/10'
-        : 'border-gray-300 focus:border-[#007BFF] focus:ring-[#007BFF]/10'
+    `w-full px-4 py-2.5 border rounded-lg text-sm text-gray-900 placeholder-gray-400 transition-all focus:outline-none focus:ring-2 ${errors[field]
+      ? 'border-red-400 focus:border-red-400 focus:ring-red-400/10'
+      : 'border-gray-300 focus:border-[#007BFF] focus:ring-[#007BFF]/10'
     }`;
 
   return (
-    <AuthLayout>
+    <>
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Crear cuenta</h2>
         <p className="text-sm text-[#6C757D] mt-1">Únete al sistema de gestión de eventos</p>
@@ -198,6 +197,6 @@ export function RegisterPage() {
           Iniciar sesión
         </Link>
       </p>
-    </AuthLayout>
+    </>
   );
 }
