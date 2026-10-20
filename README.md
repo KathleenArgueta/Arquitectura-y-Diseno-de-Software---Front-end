@@ -1,16 +1,47 @@
-# React + Vite
+# iMeet! · Event management front-end
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Web front-end for iMeet!, an event management system where organizers publish events by category, attendees browse and register, and admins manage users, companies and check-in. Team project for Software Architecture and Design at ESEN.
 
-Currently, two official plugins are available:
+| | |
+|---|---|
+| **Team** | Kathleen Argueta, Nicky2811, leví, RobertoMilan, Alejo |
+| **Stack** | React 19 · Vite · React Router · Tailwind CSS · Axios · Docker · Nginx |
+| **Portfolio** | [kathleenargueta.github.io](https://kathleenargueta.github.io) |
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## My part
 
-## React Compiler
+I set up the React + Vite project and built the event flow, 11 of the repository's commits:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Event catalog and cards:** the cards attendees see, and a dedicated attendee view.
+- **Event registration form:** connected to the back-end, with the signed-in user shown on the form.
+- **Category manager:** a view to create the categories events are filed under, wired to the API.
+- **Visual consistency:** the shared theme and a light mode for the sign-in screens so they match the rest of the system.
 
-## Expanding the ESLint configuration
+Teammates built authentication with bearer tokens, the admin and company screens, check-in, component tests and the Docker + Nginx setup.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Screens
+
+| Route | What it shows |
+|---|---|
+| `/login`, `/register`, `/forgot-password` | Account access |
+| `/dashboard` | Event catalog and event form |
+| `/asistentes` | Attendee view |
+| `/empresas` | Companies |
+| `/admin/users` | User administration |
+| `/profile` | The signed-in user's profile |
+
+## Run it locally
+
+The app expects the iMeet! API at `http://localhost:3000`.
+
+```bash
+npm install
+npm run dev
+```
+
+Or build and serve it with Nginx:
+
+```bash
+docker build -t imeet-frontend .
+docker run -p 8080:80 imeet-frontend
+```
